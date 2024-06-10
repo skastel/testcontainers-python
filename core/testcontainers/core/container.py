@@ -232,6 +232,7 @@ class Reaper:
 
         container_host = Reaper._container.get_container_host_ip()
         container_port = int(Reaper._container.get_exposed_port(8080))
+        logger.info(f"Attempting to connect reaper to {container_host}:{container_port}")
 
         if not container_host or not container_port:
             raise ContainerConnectException(
