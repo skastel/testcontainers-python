@@ -139,14 +139,7 @@ class DockerContainer:
 
     @wait_container_is_ready()
     def get_exposed_port(self, port: int) -> str:
-        mapped_port = self.get_docker_client().port(self._container.id, port)
-        if inside_container():
-            gateway_ip = self.get_docker_client().gateway_ip(self._container.id)
-            host = self.get_docker_client().host()
-
-            if gateway_ip == host:
-                return port
-        return mapped_port
+        return self.get_docker_client().port(self._container.id, port)
 
     def with_command(self, command: str) -> Self:
         self._command = command
