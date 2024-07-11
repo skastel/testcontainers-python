@@ -1,4 +1,5 @@
-from typing import TYPE_CHECKING, Optional
+from os import PathLike
+from typing import TYPE_CHECKING, Optional, Union
 
 from typing_extensions import Self
 
@@ -23,28 +24,37 @@ class DockerImage:
             ...    logs = image.get_logs()
 
     :param tag: Tag for the image to be built (default: None)
-    :param path: Path to the Dockerfile to build the image
+    :param path: Path to the build context
+    :param dockerfile_path: Path to the Dockerfile within the build context path (default: Dockerfile)
+    :param no_cache: Bypass build cache; CLI's --no-cache
     """
 
     def __init__(
         self,
-        path: str,
+        path: Union[str, PathLike],
         docker_client_kw: Optional[dict] = None,
         tag: Optional[str] = None,
         clean_up: bool = True,
+        dockerfile_path: Union[str, PathLike] = "Dockerfile",
+        no_cache: bool = False,
         **kwargs,
     ) -> None:
         self.tag = tag
         self.path = path
-        self.id = None
         self._docker = DockerClient(**(docker_client_kw or {}))
         self.clean_up = clean_up
         self._kwargs = kwargs
+        self._image = None
+        self._logs = None
+        self._dockerfile_path = dockerfile_path
+        self._no_cache = no_cache
 
     def build(self, **kwargs) -> Self:
         logger.info(f"Building image from {self.path}")
         docker_client = self.get_docker_client()
-        self._image, self._logs = docker_client.build(path=self.path, tag=self.tag, **kwargs)
+        self._image, self._logs = docker_client.build(
+            path=str(self.path), tag=self.tag, dockerfile=self._dockerfile_path, nocache=self._no_cache, **kwargs
+        )
         logger.info(f"Built image {self.short_id} with tag {self.tag}")
         return self
 

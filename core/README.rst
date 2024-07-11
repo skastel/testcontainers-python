@@ -1,4 +1,4 @@
-testcontainers-core
+Testcontainers Core
 ===================
 
 :code:`testcontainers-core` is the core functionality for spinning up Docker containers in test environments.
@@ -7,7 +7,16 @@ testcontainers-core
 
 .. autoclass:: testcontainers.core.image.DockerImage
 
-Using `DockerContainer` and `DockerImage` directly:
+.. autoclass:: testcontainers.core.generic.DbContainer
+
+.. raw:: html
+
+    <hr>
+
+Examples
+--------
+
+Using `DockerContainer` and `DockerImage` to create a container:
 
 .. doctest::
 
@@ -18,3 +27,6 @@ Using `DockerContainer` and `DockerImage` directly:
     >>> with DockerImage(path="./core/tests/image_fixtures/sample/", tag="test-sample:latest") as image:
     ...     with DockerContainer(str(image)) as container:
     ...         delay = wait_for_logs(container, "Test Sample Image")
+
+The `DockerImage` class is used to build the image from the specified path and tag.
+The `DockerContainer` class is then used to create a container from the image.
